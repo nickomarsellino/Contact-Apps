@@ -1,26 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense, lazy, useMemo } from "react";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 
-function App() {
+import "./App.css";
+
+import AppRoutes from "./configs/routes";
+
+// templates
+const MainTemplate = lazy(() => import("./components/MainTemplate"));
+
+const AppContent = () => {
+  const appRouteMemo = useMemo(() => AppRoutes, []);
+  const renderContent = () => {
+    return (
+      <Routes>
+      {appRouteMemo.map((route) => (
+        <Route key={route.id} path={route.path} element={<route.component />} />
+      ))}
+    </Routes>
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Suspense>
+      <MainTemplate>{renderContent()}</MainTemplate>
+    </Suspense>
   );
-}
+};
+
+const App = () => {
+  return (
+    <>
+      <BrowserRouter>
+          <AppContent />
+      </BrowserRouter>
+    </>
+  );
+};
 
 export default App;
